@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fc698111f3a32b47b42259b25607e01, type: 3}
+  m_Name: Metal Market
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 0}
+  visual: {fileID: 0}
+  width: 0
+  height: 0
+  nameString: Metal Market
+  maxHealth: 100
+  cost: 320000001900000096000000
+  resourceProducer: 1
+  productionResourceType: 3
+  resourceAmountProduced: 3
+  energyProducer: 0
+  energy: 3
+  metalConsumer: 1
+  mineralConsumer: 0
+  creditConsumer: 0
+  metalsConsumed: 1
+  mineralsConsumed: 0
+  creditsConsumed: 0
