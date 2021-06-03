@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public GameObject gridPrefab;
     public GameObject ghostPrefab;
     public SpriteRenderer background;
-    public GameObject hubPrefab;
+    public BuildingTypeSO hubPrefab;
 
     [Header("Resources")]
     [SerializeField] private int energyResource;
@@ -57,11 +57,22 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+        // Initialize Objects and create base Map
         Instantiate(gridPrefab, Vector3.zero, Quaternion.identity);
         GridBuildingSystem.Instance.map = background;
         GridBuildingSystem.Instance.InitializeMap();
         Instantiate(ghostPrefab, Vector3.zero, Quaternion.identity);
+
+        // Initialize Map Objects
+
+        // Create Resource Nodes
+
+        // Create Hub
+        SpawnHub();
+
+        // Spawn Enemy Spawners
     }
+
     private void Update()
     {
         // Tick for globals
@@ -75,11 +86,41 @@ public class GameManager : MonoBehaviour
                 ModifyResource(ResourceType.Credits, creditsResourceGain);
                 ModifyResource(ResourceType.Metals, metalsResourceGain);
                 ModifyResource(ResourceType.Minerals, mineralsResourceGain);
+
+                Debug.Log("added resources");
             }
 
             // Execute Tick based systems
             UpdateResourceText();
 
+        }
+    }
+
+    private void SpawnHub()
+    {
+        GridBuildingSystem gbs = GridBuildingSystem.Instance;
+
+        // Get Random Location near the center of the grid
+
+        // half widht and height plus 5 and -5, get random values between that
+
+        int xPos = Mathf.RoundToInt(gbs.width / 2);
+        int yPos = Mathf.RoundToInt(gbs.height / 2);
+
+        xPos = Random.Range(xPos - 5, xPos + 5);
+        yPos = Random.Range(yPos - 5, yPos + 5);
+
+        BuildingTypeSO.Dir dir = BuildingTypeSO.Dir.Down;
+        Vector2Int rotationOffset = hubPrefab.GetRotationOffset(dir);
+        Vector3 placedBuildingWorldPosition = gbs.grid.GetWorldPosition(xPos, yPos) + new Vector3(rotationOffset.x, rotationOffset.y, 0) * gbs.grid.GetCellSize();
+
+        PlacedBuilding placedBuilding = PlacedBuilding.Create(placedBuildingWorldPosition, new Vector2Int(xPos, yPos), dir, hubPrefab);
+        placedBuilding.GetComponent<Building>().OnCreation();
+        List<Vector2Int> gridPositionList = hubPrefab.GetGridPositionList(new Vector2Int(xPos, yPos), dir);
+
+        foreach (Vector2Int gridPosition in gridPositionList)
+        {
+            gbs.grid.GetGridObject(gridPosition.x, gridPosition.y).SetPlacedBuilding(placedBuilding);
         }
     }
 

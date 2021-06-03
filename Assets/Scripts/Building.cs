@@ -49,12 +49,17 @@ namespace MyCode
 
             gameObject.SetActive(true);
             canWork = true;
+
+            Debug.Log("Structure created");
+
         }
         public void SellBuilding()
         {
             AddResources();
             RestoreProductionAndConsumptiom();
             Destroy(gameObject);
+            Debug.Log("Structure sold");
+
         }
         private void CheckHealth()
         {
@@ -62,6 +67,8 @@ namespace MyCode
             {
                 RestoreProductionAndConsumptiom();
                 Destroy(gameObject);
+
+                Debug.Log("Structure destroyed");
             }
         }
         private void AddResources()
@@ -72,44 +79,60 @@ namespace MyCode
         }
         private void RemoveResources()
         {
-            bool checking = true;
-            while (checking)
+            if (buildingType.cost.Length == 0)
             {
-                if (buildingType.cost[0] <= gm.GetResource(ResourceType.Metals))
-                {
-                    gm.ModifyResource(ResourceType.Metals, -buildingType.cost[0]);
-                }
+                health = buildingType.maxHealth;
+            }
 
-                else
+            else
+            {
+                bool checking = true;
+                while (checking)
                 {
+                    if (buildingType.cost.Length >= 1)
+                    {
+                        if (buildingType.cost[0] <= gm.GetResource(ResourceType.Metals))
+                        {
+                            gm.ModifyResource(ResourceType.Metals, -buildingType.cost[0]);
+                        }
+                        else
+                        {
+                            checking = false;
+                            continue;
+                        }
+                    }
+
+                    if (buildingType.cost.Length >= 2)
+                    {
+                        if (buildingType.cost[1] <= gm.GetResource(ResourceType.Minerals))
+                        {
+                            gm.ModifyResource(ResourceType.Minerals, -buildingType.cost[1]);
+                        }
+
+                        else
+                        {
+                            checking = false;
+                            continue;
+                        }
+                    }
+
+                    if (buildingType.cost.Length >= 2)
+                    {
+                        if (buildingType.cost[2] <= gm.GetResource(ResourceType.Credits))
+                        {
+                            gm.ModifyResource(ResourceType.Credits, -buildingType.cost[2]);
+                            health = buildingType.maxHealth;
+                        }
+
+                        else
+                        {
+                            checking = false;
+                            continue;
+                        }
+                    }
+
                     checking = false;
-                    continue;
                 }
-
-                if (buildingType.cost[1] <= gm.GetResource(ResourceType.Minerals))
-                {
-                    gm.ModifyResource(ResourceType.Minerals, -buildingType.cost[1]);
-                }
-
-                else
-                {
-                    checking = false;
-                    continue;
-                }
-
-                if (buildingType.cost[2] <= gm.GetResource(ResourceType.Credits))
-                {
-                    gm.ModifyResource(ResourceType.Credits, -buildingType.cost[2]);
-                    health = buildingType.maxHealth;
-                }
-
-                else
-                {
-                    checking = false;
-                    continue;
-                }
-
-                checking = false;
             }
         }
         private void RestoreProductionAndConsumptiom()

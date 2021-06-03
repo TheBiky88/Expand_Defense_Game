@@ -17,7 +17,7 @@ namespace MyCode
         [SerializeField] private List<BuildingTypeSO> buildingTypeSOList;
         private BuildingTypeSO buildingTypeSO;
 
-        private Grid<GridObject> grid;
+        public Grid<GridObject> grid;
         private BuildingTypeSO.Dir dir = BuildingTypeSO.Dir.Down;
 
         public int width;

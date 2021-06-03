@@ -247,7 +247,7 @@ MonoBehaviour:
   gridPrefab: {fileID: 163832706329288480, guid: bdd54b4e42102bf4dbeec4e78fee1c0d, type: 3}
   ghostPrefab: {fileID: 4230636604666963439, guid: 3cac3dd0446bf86469e1be4551a8d5b6, type: 3}
   background: {fileID: 745717304}
-  hubPrefab: {fileID: 4349045233726364480, guid: 50d620a358b133842a2fa1c0d140090c, type: 3}
+  hubPrefab: {fileID: 11400000, guid: 4fc0fe89cc9d6eb4aa19521a69ee9c1d, type: 2}
   energyResource: 0
   mineralsResource: 100
   metalsResource: 100
