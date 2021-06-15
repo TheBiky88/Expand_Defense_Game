@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fc698111f3a32b47b42259b25607e01, type: 3}
-  m_Name: Metal Miner
+  m_Name: Miner
   m_EditorClassIdentifier: 
   prefab: {fileID: 7530512180276579515, guid: 44e8723a38fa5de42981fed0ad3f7eac, type: 3}
   visual: {fileID: 786228290747698917, guid: ba675fc9b87582444955d255000dfca7, type: 3}
   width: 1
   height: 1
-  nameString: Metal Miner
+  nameString: Miner
   maxHealth: 30
-  cost: 000000001900000032000000
+  cost: 190000001900000032000000
   resourceProducer: 1
-  productionResourceType: 1
+  productionResourceType: 0
   resourceAmountProduced: 5
   energyProducer: 0
   energy: 2

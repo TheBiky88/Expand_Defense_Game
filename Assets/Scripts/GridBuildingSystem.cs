@@ -57,6 +57,26 @@ namespace MyCode
                     {
                         canBuild = false;
                     }
+
+                    if (buildingTypeSO.name == "Miner")
+                    {
+                        PlacedBuilding pb = grid.GetGridObject(gridPosition.x, gridPosition.y).GetPlacedBuilding();
+                        if (pb != null)
+                        {
+                            if (pb.GetComponent<ResourceNode>() != null)
+                            {
+                                canBuild = true;
+                            }
+                            else
+                            {
+                                canBuild = false;
+                            }
+                        }
+                        else
+                        {
+                            canBuild = false;
+                        }
+                    }
                 }
 
                 if (canBuild)
@@ -87,7 +107,6 @@ namespace MyCode
                 {
                     Vector2Int rotationOffset = buildingTypeSO.GetRotationOffset(dir);
                     Vector3 placedBuildingWorldPosition = grid.GetWorldPosition(x, y) + new Vector3(rotationOffset.x, rotationOffset.y, 0) * grid.GetCellSize();
-
                     
                     PlacedBuilding placedBuilding = PlacedBuilding.Create(placedBuildingWorldPosition, new Vector2Int(x, y), dir, buildingTypeSO);
                     placedBuilding.GetComponent<Building>().OnCreation();
@@ -112,16 +131,22 @@ namespace MyCode
 
                 PlacedBuilding placedBuilding = gridObject.GetPlacedBuilding();
 
-                if (placedBuilding != null && buildingTypeSO.nameString != "Hub")
+                if (placedBuilding != null)
                 {
-                    placedBuilding.DestroySelf();
-                    placedBuilding.GetComponent<Building>().SellBuilding();
-
-                    List<Vector2Int> gridPositionList = placedBuilding.GetGridPositionsList();
-
-                    foreach (Vector2Int gridPosition in gridPositionList)
+                    if (placedBuilding.GetComponent<Building>() != null)
                     {
-                        grid.GetGridObject(gridPosition.x, gridPosition.y).ClearPlacedBuilding();
+                        if (placedBuilding.GetComponent<Building>().demolishable)
+                        {
+                            placedBuilding.DestroySelf();
+                            placedBuilding.GetComponent<Building>().SellBuilding();
+
+                            List<Vector2Int> gridPositionList = placedBuilding.GetGridPositionsList();
+
+                            foreach (Vector2Int gridPosition in gridPositionList)
+                            {
+                                grid.GetGridObject(gridPosition.x, gridPosition.y).ClearPlacedBuilding();
+                            }
+                        }
                     }
                 }
             }
@@ -229,7 +254,6 @@ namespace MyCode
             return new Vector2(width * cellSize, height * cellSize);
         }
 
-        #region Get Mouse Pos by Code Junky
         public static Vector3 GetMouseWorldPosition()
         {
             Vector3 vec = GetMouseWorldPositionWithZ(Input.mousePosition, Camera.main);
@@ -249,6 +273,5 @@ namespace MyCode
             Vector3 worldPosition = worldCamera.ScreenToWorldPoint(screenPosition);
             return worldPosition;
         }
-        #endregion
     }
 }

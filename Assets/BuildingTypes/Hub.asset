@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Hub
   m_EditorClassIdentifier: 
   prefab: {fileID: 4349045233726364483, guid: 50d620a358b133842a2fa1c0d140090c, type: 3}
-  visual: {fileID: 7536400991109087229, guid: aff9940624c56684da4bb23915e16469, type: 3}
+  visual: {fileID: 0}
   width: 3
   height: 3
   nameString: Hub
@@ -22,8 +22,11 @@ MonoBehaviour:
   resourceProducer: 0
   productionResourceType: 0
   resourceAmountProduced: 0
-  resourceConsumer: 0
-  consumptionResourceTypes: 
-  resourceAmountConsumed: 
   energyProducer: 1
   energy: 10
+  metalConsumer: 0
+  mineralConsumer: 0
+  creditConsumer: 0
+  metalsConsumed: 0
+  mineralsConsumed: 0
+  creditsConsumed: 0

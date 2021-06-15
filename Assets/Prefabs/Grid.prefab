@@ -46,8 +46,8 @@ MonoBehaviour:
   buildingTypeSOList:
   - {fileID: 11400000, guid: 7ff1b9b2b28b1194196d8e620199be0a, type: 2}
   - {fileID: 11400000, guid: 6e3e71ff599bab7428b8e90de59b1ff6, type: 2}
-  width: 50
-  height: 50
+  width: 100
+  height: 100
   cellSize: 8
   showDebug: 0
   map: {fileID: 0}

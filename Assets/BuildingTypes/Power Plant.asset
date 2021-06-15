@@ -20,7 +20,7 @@ MonoBehaviour:
   maxHealth: 50
   cost: 190000001900000032000000
   resourceProducer: 0
-  productionResourceType: 0
+  productionResourceType: 3
   resourceAmountProduced: 0
   energyProducer: 1
   energy: 5

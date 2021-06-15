@@ -60,6 +60,7 @@ MonoBehaviour:
   health: 0
   canWork: 0
   buildingType: {fileID: 11400000, guid: 4fc0fe89cc9d6eb4aa19521a69ee9c1d, type: 2}
+  demolishable: 0
 --- !u!1 &4349045235320667778
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,7 +132,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 8c31c17c062307b469865ad6f3d18951, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

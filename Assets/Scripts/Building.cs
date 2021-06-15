@@ -8,36 +8,85 @@ namespace MyCode
     {
         public int health; // Building Health
         public bool canWork; // if the building can work, depending on power, or if the player has the resources
-        [SerializeField] private BuildingTypeSO buildingType;
-        GameManager gm = GameManager.Instance;
-        
+        private bool active;
+        public BuildingTypeSO buildingType;
+        private GameManager gm = GameManager.Instance;
+        public bool demolishable;
+
         private void Update()
         {
             if (gm.ticked)
             {
                 // Execute Tick based Systems
                 CheckHealth();
-
-                if (gm.GetResource(ResourceType.Energy) >= 0)
-                {
-                    if (!canWork)
-                    {
-                        canWork = true;
-                        UpdateConsumers();
-                        UpdateProducers();
-                    }
-                }
-                else
-                {
-                    canWork = false;
-                    RestoreProductionAndConsumptiom();
-                }
             }
         }
 
+        public void CheckProduction()
+        {
+            // Check if this building can work
+            bool checking = true;
+            while (checking)
+            {
+                if (gm.tempCredits < buildingType.creditsConsumed)
+                {
+                    canWork = false;
+                    checking = false;
+                    continue;
+                }
+                else
+                {
+                    gm.tempCredits -= buildingType.creditsConsumed;
+                    canWork = true;
+                }
+
+                if (gm.tempMetals < buildingType.metalsConsumed)
+                {
+                    canWork = false;
+                    checking = false;
+                    continue;
+                }
+                else
+                {
+                    gm.tempMetals -= buildingType.metalsConsumed;
+                    canWork = true;
+                }
+
+                if (gm.tempMinerals < buildingType.mineralsConsumed)
+                {
+                    canWork = false;
+                    checking = false;
+                    continue;
+                }
+                else
+                {
+                    gm.tempMinerals -= buildingType.mineralsConsumed;
+                    canWork = true;
+                }
+
+                checking = false;
+            }
+
+            if (!canWork)
+            {
+                if (active)
+                {
+                    RestoreProductionAndConsumptiom();
+                    active = false;
+                }
+            }
+            else
+            {
+                if (!active)
+                {
+                    UpdateResources();
+                    active = true;
+                }
+            }
+        }
         public void OnCreation()
         {
-            gm = GameManager.Instance;
+            gm.buildings.Add(this);
 
             // Remove cost from global stock
             RemoveResources();
@@ -45,21 +94,24 @@ namespace MyCode
             //security check, if the player somehow did not have enough resources
             CheckHealth();
 
+            // Check if this building is a Miner
+            CheckForMiner();
+
             UpdateResources();
 
             gameObject.SetActive(true);
             canWork = true;
-
-            Debug.Log("Structure created");
-
+            active = true;
         }
         public void SellBuilding()
         {
             AddResources();
-            RestoreProductionAndConsumptiom();
+            if (active)
+            {
+                RestoreProductionAndConsumptiom();
+            }
+            gm.buildings.Remove(this);
             Destroy(gameObject);
-            Debug.Log("Structure sold");
-
         }
         private void CheckHealth()
         {
@@ -76,6 +128,24 @@ namespace MyCode
             gm.ModifyResource(ResourceType.Metals, Mathf.RoundToInt(buildingType.cost[0] / 2f));
             gm.ModifyResource(ResourceType.Minerals, Mathf.RoundToInt(buildingType.cost[1] / 2f));
             gm.ModifyResource(ResourceType.Credits, Mathf.RoundToInt(buildingType.cost[2] / 2f));
+        }
+        private void CheckForMiner()
+        {
+            if (buildingType.name == "Miner")
+            {
+                GridBuildingSystem gbs = GridBuildingSystem.Instance;
+                PlacedBuilding placedBuilding = gameObject.GetComponent<PlacedBuilding>();
+
+                List<Vector2Int> gridPositionList = placedBuilding.GetGridPositionsList();
+                ResourceNode resourceNode = null;
+
+                foreach (Vector2Int gridPosition in gridPositionList)
+                {
+                    resourceNode = gbs.grid.GetGridObject(gridPosition.x, gridPosition.y).GetPlacedBuilding().GetComponent<ResourceNode>();
+                }
+
+                buildingType.productionResourceType = resourceNode.resourceType;
+            }
         }
         private void RemoveResources()
         {

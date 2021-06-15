@@ -17,7 +17,9 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     public static GameManager Instance { get { return instance; } }
 
-    [Header("Misc")]
+    [HideInInspector] public List<Building> buildings;
+
+    [Header("Ticks")]
     private float tick;
     public ulong ticks;
     public bool ticked;
@@ -27,6 +29,8 @@ public class GameManager : MonoBehaviour
     public GameObject ghostPrefab;
     public SpriteRenderer background;
     public BuildingTypeSO hubPrefab;
+    public BuildingTypeSO metalsNodePrefab;
+    public BuildingTypeSO mineralsNodePrefab;
 
     [Header("Resources")]
     [SerializeField] private int energyResource;
@@ -40,6 +44,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int energyResourceSupply;
     [SerializeField] private int energyResourceDemand;
+
+    [HideInInspector] public int tempMinerals;
+    [HideInInspector] public int tempMetals;
+    [HideInInspector] public int tempCredits;
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI energyText;
@@ -57,6 +65,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+        buildings = new List<Building>();
+
         // Initialize Objects and create base Map
         Instantiate(gridPrefab, Vector3.zero, Quaternion.identity);
         GridBuildingSystem.Instance.map = background;
@@ -66,6 +76,7 @@ public class GameManager : MonoBehaviour
         // Initialize Map Objects
 
         // Create Resource Nodes
+        SpawnResourceNodes();
 
         // Create Hub
         SpawnHub();
@@ -83,45 +94,121 @@ public class GameManager : MonoBehaviour
             if (ticks % 40 == 0)
             {
                 // Execute every 5 seconds
-                ModifyResource(ResourceType.Credits, creditsResourceGain);
-                ModifyResource(ResourceType.Metals, metalsResourceGain);
-                ModifyResource(ResourceType.Minerals, mineralsResourceGain);
-
-                Debug.Log("added resources");
+                ResourceTick();
             }
 
             // Execute Tick based systems
             UpdateResourceText();
-
         }
     }
 
+
+    private void SpawnResourceNodes()
+    {
+        GridBuildingSystem gbs = GridBuildingSystem.Instance;
+        int nodes = (gbs.width + gbs.height) / 2;
+        int[] xPos = new int[nodes];
+        int[] yPos = new int[nodes];
+
+        // Determining 40 Node Positions
+        for (int i = 0; i < nodes; i++)
+        {
+            xPos[i] = Random.Range(8, gbs.width - 8);
+            yPos[i] = Random.Range(8, gbs.height - 8);
+
+            for (int j = 0; j < i; j++)
+            {
+                while (xPos[i] == xPos[j] && yPos[i] == yPos[j])
+                {
+                    xPos[i] = Random.Range(0, gbs.width);
+                    yPos[i] = Random.Range(0, gbs.height);
+                }
+            }
+        }
+
+        // Metals
+        for (int i = 0; i < nodes / 2; i++)
+        {
+            BuildingTypeSO.Dir dir = BuildingTypeSO.Dir.Down;
+            Vector2Int rotationOffset = metalsNodePrefab.GetRotationOffset(dir);
+            Vector3 placedBuildingWorldPosition = gbs.grid.GetWorldPosition(xPos[i], yPos[i]) + new Vector3(rotationOffset.x, rotationOffset.y, 0) * gbs.grid.GetCellSize();
+
+            PlacedBuilding placedBuilding = PlacedBuilding.Create(placedBuildingWorldPosition, new Vector2Int(xPos[i], yPos[i]), dir, metalsNodePrefab);
+
+            List<Vector2Int> gridPositionList = metalsNodePrefab.GetGridPositionList(new Vector2Int(xPos[i], yPos[i]), dir);
+            gbs.grid.GetGridObject(gridPositionList[0].x, gridPositionList[0].y).SetPlacedBuilding(placedBuilding);
+        }
+
+        // Minerals
+        for (int i = nodes / 2; i < nodes; i++)
+        {
+            BuildingTypeSO.Dir dir = BuildingTypeSO.Dir.Down;
+            Vector2Int rotationOffset = mineralsNodePrefab.GetRotationOffset(dir);
+            Vector3 placedBuildingWorldPosition = gbs.grid.GetWorldPosition(xPos[i], yPos[i]) + new Vector3(rotationOffset.x, rotationOffset.y, 0) * gbs.grid.GetCellSize();
+
+            PlacedBuilding placedBuilding = PlacedBuilding.Create(placedBuildingWorldPosition, new Vector2Int(xPos[i], yPos[i]), dir, mineralsNodePrefab);
+
+            List<Vector2Int> gridPositionList = mineralsNodePrefab.GetGridPositionList(new Vector2Int(xPos[i], yPos[i]), dir);
+            gbs.grid.GetGridObject(gridPositionList[0].x, gridPositionList[0].y).SetPlacedBuilding(placedBuilding);
+        }
+    }
     private void SpawnHub()
     {
         GridBuildingSystem gbs = GridBuildingSystem.Instance;
-
-        // Get Random Location near the center of the grid
-
-        // half widht and height plus 5 and -5, get random values between that
-
-        int xPos = Mathf.RoundToInt(gbs.width / 2);
-        int yPos = Mathf.RoundToInt(gbs.height / 2);
-
-        xPos = Random.Range(xPos - 5, xPos + 5);
-        yPos = Random.Range(yPos - 5, yPos + 5);
-
         BuildingTypeSO.Dir dir = BuildingTypeSO.Dir.Down;
+        List<Vector2Int> gridPositionList;
+        int xPos = 0;
+        int yPos = 0;
+
+        bool canBuild = false;
+        while (!canBuild)
+        {
+            xPos = Mathf.RoundToInt(gbs.width / 2);
+            yPos = Mathf.RoundToInt(gbs.height / 2);
+
+            xPos = Random.Range(xPos - 5, xPos + 5);
+            yPos = Random.Range(yPos - 5, yPos + 5);
+
+            gridPositionList = hubPrefab.GetGridPositionList(new Vector2Int(xPos, yPos), dir);
+
+            canBuild = true;
+
+            foreach (Vector2Int gridPosition in gridPositionList)
+            {
+                if (!gbs.grid.GetGridObject(gridPosition.x, gridPosition.y).CanBuild())
+                {
+                    canBuild = false;
+                }
+            }
+        }
+
         Vector2Int rotationOffset = hubPrefab.GetRotationOffset(dir);
         Vector3 placedBuildingWorldPosition = gbs.grid.GetWorldPosition(xPos, yPos) + new Vector3(rotationOffset.x, rotationOffset.y, 0) * gbs.grid.GetCellSize();
 
         PlacedBuilding placedBuilding = PlacedBuilding.Create(placedBuildingWorldPosition, new Vector2Int(xPos, yPos), dir, hubPrefab);
         placedBuilding.GetComponent<Building>().OnCreation();
-        List<Vector2Int> gridPositionList = hubPrefab.GetGridPositionList(new Vector2Int(xPos, yPos), dir);
+        gridPositionList = hubPrefab.GetGridPositionList(new Vector2Int(xPos, yPos), dir);
 
         foreach (Vector2Int gridPosition in gridPositionList)
         {
             gbs.grid.GetGridObject(gridPosition.x, gridPosition.y).SetPlacedBuilding(placedBuilding);
         }
+    }
+    private void ResourceTick()
+    {
+        tempCredits = creditsResource;
+        tempMetals = metalsResource;
+        tempMinerals = mineralsResource;
+
+        // Check if buildings can produce with the current resources and power
+        foreach (Building building in buildings)
+        {
+            building.CheckProduction();
+        }
+
+        ModifyResource(ResourceType.Credits, creditsResourceGain);
+        ModifyResource(ResourceType.Metals, metalsResourceGain);
+        ModifyResource(ResourceType.Minerals, mineralsResourceGain);
     }
 
     public int GetResource(ResourceType resourceType)
@@ -148,7 +235,7 @@ public class GameManager : MonoBehaviour
         metalsText.text = $"{metalsResource} ( {metalsResourceGain} )";
         creditsText.text = $"{creditsResource} ( {creditsResourceGain} )";
     }
-    public void Tick()
+    private void Tick()
     {
         ticked = false;
         tick += Time.deltaTime;
@@ -175,21 +262,19 @@ public class GameManager : MonoBehaviour
                 {
                     energyResourceDemand += amount;
                 }
-                UpdateResourceText();
                 break;
             case ResourceType.Minerals:
                 mineralsResourceGain += amount;
-                UpdateResourceText();
                 break;
             case ResourceType.Metals:
                 metalsResourceGain += amount;
-                UpdateResourceText();
                 break;
             case ResourceType.Credits:
                 creditsResourceGain += amount;
-                UpdateResourceText();
                 break;
         }
+     
+        UpdateResourceText();
     }
     public void ModifyResource(ResourceType resourceType, int amount)
     {

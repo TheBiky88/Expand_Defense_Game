@@ -10,20 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fc698111f3a32b47b42259b25607e01, type: 3}
-  m_Name: Mineral Miner
+  m_Name: Minerals Node
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 2437693505620862546, guid: 95d7bb8c72a3a5f4f93e214a7a04706c, type: 3}
   visual: {fileID: 0}
-  width: 0
-  height: 0
-  nameString: Mineral Miner
-  maxHealth: 30
-  cost: 190000000000000032000000
-  resourceProducer: 1
-  productionResourceType: 2
+  width: 1
+  height: 1
+  nameString: Minerals Node
+  maxHealth: 0
+  cost: 
+  resourceProducer: 0
+  productionResourceType: 0
   resourceAmountProduced: 0
-  resourceConsumer: 0
-  consumptionResourceTypes: 
-  resourceAmountConsumed: 
   energyProducer: 0
-  energy: 2
+  energy: 0
+  metalConsumer: 0
+  mineralConsumer: 0
+  creditConsumer: 0
+  metalsConsumed: 0
+  mineralsConsumed: 0
+  creditsConsumed: 0

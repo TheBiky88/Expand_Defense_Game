@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fc698111f3a32b47b42259b25607e01, type: 3}
-  m_Name: Mineral Market
+  m_Name: Metals Node
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 1217088472848977322, guid: e8f413216aa020744998a826b7527f9f, type: 3}
   visual: {fileID: 0}
-  width: 0
-  height: 0
-  nameString: Mineral Market
-  maxHealth: 100
-  cost: 190000003200000096000000
-  resourceProducer: 1
-  productionResourceType: 3
-  resourceAmountProduced: 3
+  width: 1
+  height: 1
+  nameString: Metal Node
+  maxHealth: 0
+  cost: 
+  resourceProducer: 0
+  productionResourceType: 0
+  resourceAmountProduced: 0
   energyProducer: 0
-  energy: 3
+  energy: 0
   metalConsumer: 0
-  mineralConsumer: 1
+  mineralConsumer: 0
   creditConsumer: 0
   metalsConsumed: 0
-  mineralsConsumed: 1
+  mineralsConsumed: 0
   creditsConsumed: 0
